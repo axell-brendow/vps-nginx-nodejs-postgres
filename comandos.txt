@@ -1,0 +1,73 @@
+# https://docs.docker.com/engine/reference/commandline/container_run/
+
+docker pull <imagem:versao>  # Baixa uma versão específica de uma imagem
+docker images  # Lista as imagens criadas
+
+# --publish Mapea a porta 80 do container para a porta 8080 no computador
+# --detach Roda o container em background deixando o terminal livre
+# --name Coloca um nome no container
+# --interactive --tty  Mantém a entrada padrão aberta para o container e aloca um pseudo terminal
+docker container run --publish 8080:80 --detach --name webserver nginx  # Roda a imagem nginx no container
+
+docker container ls  # Lista containers que estão rodando
+docker info  # Mostra várias informações sobre o estado atual do docker
+docker container stop <container>  # Para o container (É possível reiniciá-lo)
+docker container ls -a  # Lista todos os containers, estando rodando ou não
+docker container rm <container>  # Se o container estiver parado, remove-o da lista
+docker container start <container>  # Reinicia um container parado
+docker container top  # Lista os processos de um container
+docker container inspect <container>  # Mostra os detalhes da configuração do container
+docker container stats  # Mostra estatísticas de performance dos containers
+
+# Caso um container seja iniciado de forma iterativa e você saia do container
+# por um exit do terminal dele, é possível voltar a ele com esse comando
+docker container attach <container>
+
+docker container exec <container> <comando>  # Executa um comando dentro do container
+docker container rename <container> <novo_nome>  # Renomeia um container
+docker container prune  # Remove todos os containers parados
+docker container rmi  # Remove uma ou mais imagens
+docker volume ls  # Lista os volumes
+docker volume rm <volume>  # Remove um volume
+docker volume inspect <volume>
+
+# Mapeia o diretório atual com o diretório /workspace no container (as pastas são sincronizadas em tempo real)
+docker run --detach --volume $(pwd):/workspace --publish 8181:8181 sapk/cloud9 --auth username:password
+
+docker container commit -m "mensagem" <volume>  # Cria uma imagem a partir de um container modificado
+docker image history <imagem>  # Obtém o histórico de uma imagem
+docker container run -d -P rastasheep/ubuntu-sshd  # Cria o container mapeamento automaticamente as portas (-P)
+docker port <container>  # Lista as portas mapeadas para um container
+docker image inspect --format '{{.Config.ExposedPorts}}' <imagem>  # Extrai o campo ExposedPorts do JSON da imagem
+ssh usuario@localhost -p <porta_local>
+docker network ls  # Lista as redes disponíveis para os containers
+docker network connect <network> <container>
+docker network disconnect <network> <container>
+docker network create <network>
+docker network rm <network>
+docker container run --network my_net <image>  # Roda um container já conectado numa rede específica
+docker container run -e VAR:VALUE  # Roda um container criando a variável de ambiente VAR com o valor VALUE no container
+docker image tag <imagem> <novo_nome>  # Ex.: docker image tag ubuntu:16.04 myubuntu:16.04
+docker build --tag nome:tag <pasta_do_Dockerfile>
+docker-compose up -d
+docker-compose down  # Para os containers e roda o prune
+docker-compose stop  # Para os containers
+docker-compose up -d --scale SERVICE=NUM  # Roda NUM instâncias do serviço SERVICE
+docker-compose run -d -p 2222:22 -p 3091:3090 nodejs  # Roda um container do serviço nodejs substituindo as configurações de porta do docker-compose.yml
+docker-compose build  # Vai no docker-compose.yml, lê o atributo build (caminho para o Dockerfile da imagem) e a reconstrói
+docker-compose up --build  # Faz o build da imagem e já sobe o primeiro container
+ssh-keygen -t rsa -b 4096 -C "breno.axel@gmail.com"  # Gera um par de chaves pública e privada
+ufw status  # Verifica as portas liberadas pelo firewall
+ufw disable  # Desabilita o firewall
+ufw default allow outgoing
+ufw allow 80/tcp
+lsof -i -P -n | grep LISTEN  # Encontra quem está usando a porta LISTEN do computador
+
+# Workflow básico
+# Desenvolver localmente (.env=DEVELOPMENT)
+# Fazer o commit para o GitHub
+# Entrar no servidor e fazer o pull
+# Dentro do servidor, (.env=PRODUCTION)
+# Fazer o build
+# Derrubar e levantar com o docker-compose
+
